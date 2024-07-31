@@ -1,0 +1,24 @@
+projects: 
+  - name: Pomodoro
+    path: /Users/usr/programming/swift/pomodoro
+    language: swift
+    lastmodified: 6/03/2024
+    active: true
+  - name: MyMap
+    path: /Users/usr/programming/swift/mymap
+    language: swift
+    lastmodified: 7/28/2024
+    active: true
+  - name: pm
+    path: /Users/anthony/programming/go/projectmanager
+    language: go
+    lastmodified: today
+    active: true  - name: bone
+    path: /users/anthony/programming/c/bone
+    language: c
+    lastmodified: today
+    active: true  - name: po
+    path: /Users/anthony/programming/go/projectmanager
+    language: jo
+    lastmodified: today
+    active: true
