@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-  "github.com/antnay/ProjectManager/internal"
+	"github.com/antnay/ProjectManager/internal"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -18,8 +18,8 @@ var rootCmd = &cobra.Command{
 	Long: `Description of things
   `,
 	Run: func(cmd *cobra.Command, args []string) {
-    internal.DisplayProj()
-  },
+		internal.DisplayProj()
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

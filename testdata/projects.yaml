@@ -1,24 +1,16 @@
-projects: 
-  - name: Pomodoro
-    path: /Users/usr/programming/swift/pomodoro
-    language: swift
-    lastmodified: 6/03/2024
-    active: true
-  - name: MyMap
-    path: /Users/usr/programming/swift/mymap
-    language: swift
-    lastmodified: 7/28/2024
-    active: true
-  - name: pm
+projects:
+  - name: project manager
+    desc: finally! a way to manage projects
     path: /Users/anthony/programming/go/projectmanager
     language: go
-    lastmodified: today
-    active: true  - name: bone
-    path: /users/anthony/programming/c/bone
-    language: c
-    lastmodified: today
-    active: true  - name: po
-    path: /Users/anthony/programming/go/projectmanager
-    language: jo
-    lastmodified: today
+    active: true
+  - name: pomodoro
+    desc: pomodoro timer for macos taskbar
+    path: /Users/anthony/programming/swift/Pomodoro
+    language: swift
+    active: true
+  - name: my map
+    desc: google couldnt do it, so i did 
+    path: /Users/anthony/programming/swift/MyMap
+    language: swift
     active: true

@@ -6,7 +6,6 @@ import (
 	"sync"
 )
 
-// TODO: no point in storing lastModified in yaml
 type Project struct {
 	name     string
 	desc     string
@@ -15,12 +14,8 @@ type Project struct {
 	active   bool
 }
 
-type Projects struct {
-	ProjectList []Project `yaml:"projects"`
-}
-
 func NewProj(args []string) {
-	// TODO: Add args as struct things
+	// TODO: args as name, desc, path, ...
 	var waitGroup sync.WaitGroup
 	fileBytesChan := make(chan []byte, 1)
 	projectChan := make(chan Project, 1)
@@ -36,8 +31,7 @@ func NewProj(args []string) {
 	waitGroup.Wait()
 	fileBytes := <-fileBytesChan
 	newProject := <-projectChan
-
-	newProjBytes := newProject.toYamlBytes()
+	newProjBytes := newProject.newEntrytoYamlBytes()
 
 	fileBytes = append(fileBytes, newProjBytes...)
 
@@ -48,31 +42,29 @@ func NewProj(args []string) {
 	}
 	_ = os.Remove(dataPath)
 	os.Rename(dataPathTemp, dataPath)
-
 }
 
 func RemoveProj() {
+	// for i, project := range projects.ProjectList {
+	// }
+	// NOTE: count 5 or however many newlines there are and remove them?
 
 }
 
 func EditProj() {
+	// for i, project := range projects.ProjectList {
+	// }
 
 }
 
 // TODO: Add option to display todos and to only show a certain project specified with args
 // TODO: Make output pretier and not a yaml dump
 func DisplayProj() {
+	// NOTE: when do i crawl
 	file := retrieveData()
 	l := len(file)
 	buf := make([]byte, l)
-	// offset := 0
 	copy(buf, file)
-	// offset += len(itemType)
-	// copy(buf[offset:], ":")
 	fmt.Println(string(buf))
 
 }
-
-//  // edit
-// for i, project := range projects.ProjectList {
-// }

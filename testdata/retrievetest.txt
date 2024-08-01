@@ -1,0 +1,6 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/antnay/ProjectManager/internal
+BenchmarkRetrieveData-12    	  133850	      8883 ns/op	    1160 B/op	       7 allocs/op
+PASS
+ok  	github.com/antnay/ProjectManager/internal	1.285s

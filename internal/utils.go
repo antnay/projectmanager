@@ -1,35 +1,56 @@
 package internal
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	// "path"
+	"strings"
+	"sync"
+
 	"path/filepath"
-	// "sync"
 )
 
 // TODO: allow use of $HOME or ~, might already be implemnted idk...
-
+// TODO: changed with config
 const dataPath = "/Users/anthony/.local/share/ProjectManager/projects.yaml"
 const dataPathTemp = "/Users/anthony/.local/share/ProjectManager/projects.yaml.temp"
 
-// TODO: make this faster with fixed buff size
-func (proj Project) toYamlBytes() []byte {
-	outByteArr := []byte{}
-	outByteArr = append(outByteArr, []byte{0x20, 0x20, 0x2d, 0x20, 0x6e, 0x61, 0x6d, 0x65, 0x3a, 0x20}...)
-	outByteArr = append(outByteArr, []byte(proj.name)...)
-	outByteArr = append(outByteArr, []byte{0x0a, 0x20, 0x20, 0x20, 0x20, 0x70, 0x61, 0x74, 0x68, 0x3a, 0x20}...)
-	outByteArr = append(outByteArr, []byte(proj.path)...)
-	outByteArr = append(outByteArr, []byte{0x0a, 0x20, 0x20, 0x20, 0x20, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x3a, 0x20}...)
-	outByteArr = append(outByteArr, []byte(proj.language)...)
-	outByteArr = append(outByteArr, []byte{0x0a, 0x20, 0x20, 0x20, 0x20, 0x6c, 0x61, 0x73, 0x74, 0x6d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x64, 0x3a, 0x20}...)
+func (proj Project) newEntrytoYamlBytes() []byte {
+	length := 60
 	if proj.active {
-		outByteArr = append(outByteArr, []byte("true")...)
+		length += len("true\n")
 	} else {
-		outByteArr = append(outByteArr, []byte("false")...)
+		length += len("false\n")
 	}
-	outByteArr = append(outByteArr, []byte("\n")...)
-	return outByteArr
+	length += len(proj.name) + len(proj.desc) + len(proj.path) + len(proj.language)
+	buf := make([]byte, length)
+	offset := 0
+	copy(buf[offset:], "  - name: ")
+	offset += len("  - name: ")
+	copy(buf[offset:], []byte(proj.name))
+	offset += len([]byte(proj.name))
+	copy(buf[offset:], "\n    desc: ")
+	offset += len("\n    desc: ")
+	copy(buf[offset:], []byte(proj.desc))
+	offset += len([]byte(proj.desc))
+	copy(buf[offset:], "\n    path: ")
+	offset += len("\n    path: ")
+	copy(buf[offset:], []byte(proj.path))
+	offset += len([]byte(proj.path))
+	copy(buf[offset:], "\n    language: ")
+	offset += len("\n    language: ")
+	copy(buf[offset:], []byte(proj.language))
+	offset += len([]byte(proj.language))
+	copy(buf[offset:], "\n    active: ")
+	offset += len("\n    active: ")
+	if proj.active {
+		copy(buf[offset:], "true\n")
+		offset += len("true\n")
+	} else {
+		copy(buf[offset:], "false\n")
+		offset += len("false\n")
+	}
+	return buf
 }
 
 func retrieveData() []byte {
@@ -59,18 +80,23 @@ func retrieveData() []byte {
 
 func makeProject() Project {
 	var proj Project
-	var in string
+	in := bufio.NewReader(os.Stdin)
 	// Name
 	fmt.Print("Name: ")
-	fmt.Scanln(&in)
-	proj.name = in
-	in = ""
+	line, _ := in.ReadString('\n')
+	line = strings.TrimRight(line, "\r\n")
+	proj.name = line
+	// desc
+	fmt.Print("Description: ")
+	line, _ = in.ReadString('\n')
+	line = strings.TrimRight(line, "\r\n")
+	proj.desc = line
 	// Path
 	pathGood := false
-	for {
+	for !pathGood {
 		fmt.Print("Path (Leave blank for current dir or a path starting with . for a relative path): ")
-		fmt.Scanln(&in)
-		if in == "" {
+		line, _ = in.ReadString('\n')
+		if line == "\n" {
 			wd, err := os.Getwd()
 			if err != nil {
 				fmt.Println("Could not get current working direcrtory, path will probably be inaccurate")
@@ -78,16 +104,17 @@ func makeProject() Project {
 				proj.path = wd
 				pathGood = true
 			}
-		} else if in[0] == '.' {
+		} else if line[0] == '.' {
+			// TODO: Test me
 			wd, err := os.Getwd()
 			if err != nil {
 				fmt.Println("Could not get current working direcrtory, path will probably be inaccurate")
 			} else {
-				proj.path = fmt.Sprintf("%s/%s", wd, in[1:])
+				proj.path = fmt.Sprintf("%s/%s", wd, line[1:])
 				pathGood = true
 			}
 		} else {
-			ad, err := filepath.Abs(in)
+			ad, err := filepath.Abs(line)
 			if err != nil {
 				fmt.Println("Could not get path from your input")
 			} else {
@@ -100,28 +127,22 @@ func makeProject() Project {
 			fmt.Println("provided path does not exist")
 			pathGood = false
 		}
-		if pathGood {
-			break
-		}
+		// fmt.Println(in)
 	}
-	in = ""
 	// Language
 	fmt.Print("language: ")
-	fmt.Scanln(&in)
-	proj.language = in
-	in = ""
-	// Last modified
-	proj.FindLastModified()
-
+	line, _ = in.ReadString('\n')
+	line = strings.TrimRight(line, "\r\n")
+	proj.language = line
 	// Active
 	for {
 		fmt.Print("active (y or n): ")
-		fmt.Scanln(&in)
-		in = ""
-		if in == "Y" || in == "y" {
+		line, _ = in.ReadString('\n')
+		line = strings.TrimRight(line, "\r\n")
+		if line == "Y" || line == "y" {
 			proj.active = true
 			break
-		} else if in == "N" || in == "n" {
+		} else if line == "N" || line == "n" {
 			proj.active = false
 			break
 		}
@@ -129,32 +150,34 @@ func makeProject() Project {
 	return proj
 }
 
-func (proj Project) crawlDir() {
+func crawlDirs(args []int) {
 	// TODO: find last modified
 	// TODO: find todo, fixme, etc
 	// goroutines!!!!!!!!!!!
+	// one pulls in paths the other crawls?
+	var wg sync.WaitGroup
+	wg.Add(1)
 
 }
 
-func findLastModified() {
-	var lastModified string
-	lastModifiedInt := 0
-	files, err := os.ReadDir(proj.path)
-	if err != nil {
-		fmt.Println("error with reading directory")
-		os.Exit(1)
-	}
-	for _, f := range files {
-		fi, err := os.Stat(proj.path + f.Name())
-		if err != nil {
-			fmt.Println(err)
-		}
-		currTime := fi.ModTime().Unix()
-		if currTime > newestTime {
-			newestTime = currTime
-			newestFile = f.Name()
-		}
-	}
-
-	proj.lastModified = lastModified
-}
+// NOTE: this should probably be in crawlDirs
+// func findLastModified(path string) {
+// 	var lastModified string
+// 	var lastModifiedInt int64 = 0
+// 	files, err := os.ReadDir(path)
+// 	if err != nil {
+// 		fmt.Println("error with reading directory")
+// 		os.Exit(1)
+// 	}
+// 	for _, f := range files {
+// 		fi, err := os.Stat(path + f.Name())
+// 		if err != nil {
+// 			fmt.Println(err)
+// 		}
+// 		currTime := fi.ModTime().Unix()
+// 		if currTime > lastModifiedInt {
+// 			lastModifiedInt = currTime
+// 			lastModified = f.Name()
+// 		}
+// 	}
+// }
