@@ -1,4 +1,4 @@
-module github.com/antnay/ProjectManager
+module github.com/antnay/projectmanager
 
 go 1.22.5
 

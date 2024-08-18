@@ -12,8 +12,8 @@ import (
 
 // TODO: allow use of $HOME or ~, might already be implemnted idk...
 // TODO: changed with config
-const dataPath = "/Users/anthony/.local/share/ProjectManager/projects.yaml"
-const dataPathTemp = "/Users/anthony/.local/share/ProjectManager/projects.yaml.temp"
+const dataPath = "/Users/anthony/.local/share/projectmanager/projects.yaml"
+const dataPathTemp = "/Users/anthony/.local/share/projectmanager/projects.yaml.temp"
 
 func (proj Project) newEntrytoYamlBytes() []byte {
 	length := 60
@@ -53,6 +53,7 @@ func (proj Project) newEntrytoYamlBytes() []byte {
 	return buf
 }
 
+// TODO: make me faster!
 func retrieveData() []byte {
 	stat, err := os.Stat(dataPath)
 	if os.IsNotExist(err) {
@@ -155,6 +156,7 @@ func crawlDirs(args []int) {
 	// TODO: find todo, fixme, etc
 	// goroutines!!!!!!!!!!!
 	// one pulls in paths the other crawls?
+	// go routines split into dirs and files, sending data to centeral channel?
 	var wg sync.WaitGroup
 	wg.Add(1)
 

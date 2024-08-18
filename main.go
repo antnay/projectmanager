@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/antnay/ProjectManager/cmd"
+	"github.com/antnay/projectmanager/cmd"
 )
 
 func main() {

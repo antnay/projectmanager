@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/antnay/ProjectManager/internal"
+	"github.com/antnay/projectmanager/internal"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
